@@ -4,8 +4,11 @@
 #include <thread>
 #include <chrono>
 #include <Windows.h>
+#include "json.hpp"
+#include <filesystem>
+#include <fstream>
 
-constexpr auto BOT_ID = "1016036808745832478";
+constexpr auto config_file = "config.json";
 
 class DiscordRPC {
 
@@ -14,7 +17,7 @@ public:
         DiscordEventHandlers handlers;  //initialize handlers
         memset(&handlers, 0, sizeof(handlers));
 
-        Discord_Initialize(BOT_ID, &handlers, true, nullptr);   //initialize with bot id
+        Discord_Initialize(bot_id, &handlers, true, nullptr);   //initialize with bot id
         std::cout << "Initialized\n";
     }
 
@@ -44,7 +47,31 @@ public:
 int main() {
     
     bool running = true;    //runnin?
-        DiscordRPC discord(BOT_ID); //initialize discord class
+       
+    if (!std::filesystem::exists(config_file)) {
+            std::ofstream configfile(config_file); //create config if not exists
+
+            nlohmann::json config;
+            config["app_id"] = "0";
+            configfile << config;
+    }
+    
+    std::ifstream config_load("config.json");
+    nlohmann::json load;
+    config_load >> load;
+
+    if (load == NULL)
+        std::cout << "Please fill in app ID in config.json";
+
+    std::string application_id = load["app_id"];
+
+
+    DiscordRPC discord(application_id.c_str()); //initialize discord class
+      
+
+
+        
+       
         
         while (running) {
 
@@ -52,7 +79,7 @@ int main() {
                 running = false;
 
             discord.UpdatePresence();/*Update presence*/
-            std::this_thread::sleep_for(std::chrono::milliseconds(50));     //wait for some optimization
+            std::this_thread::sleep_for(std::chrono::milliseconds(100));     //wait for some optimization
         }
     
 	return 0;
