@@ -26,12 +26,14 @@ public:
         std::cout << "Uninitialized\n";
     }
 
+private:
+ 
 public:
     DiscordRichPresence discordPresence{}; //class to update the info
   
-    void UpdatePresence() {
+    void UpdatePresence(std::string discord_status) {
         memset(&discordPresence, 0, sizeof(discordPresence));
-        discordPresence.state = "GTA, RDR & Phasmophobia Mods";
+        discordPresence.state = discord_status.c_str();
         discordPresence.details = "Start modding today";
         discordPresence.startTimestamp = 0;
         discordPresence.largeImageKey = "a";
@@ -53,32 +55,32 @@ int main() {
 
             nlohmann::json config;
             config["app_id"] = "0";
+            config["discord_status"] = "RPC by Narweex";
             configfile << config;
+
+            std::cout << "Please fill in app ID in config.json";
+            return 0;
     }
     
     std::ifstream config_load("config.json");
     nlohmann::json load;
     config_load >> load;
 
-    if (load == NULL)
+    if (load.empty())
         std::cout << "Please fill in app ID in config.json";
 
     std::string application_id = load["app_id"];
-
+    std::string discord_status = load["discord_status"];
 
     DiscordRPC discord(application_id.c_str()); //initialize discord class
-      
-
-
-        
-       
+    
         
         while (running) {
 
             if (GetKeyState(VK_ESCAPE) & 0x8000)    /*If ESC is pressed exit*/
                 running = false;
 
-            discord.UpdatePresence();/*Update presence*/
+            discord.UpdatePresence(discord_status);/*Update presence*/
             std::this_thread::sleep_for(std::chrono::milliseconds(100));     //wait for some optimization
         }
     
