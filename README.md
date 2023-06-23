@@ -10,7 +10,7 @@ Paste your ID into Config.json -> "app_id"
 Run the app
 
 # HOW TO BUILD
-Download the course code
+Download the cource code
 I used c++ 17
 MSVC v143
 
