@@ -7,6 +7,7 @@
 #include "json.hpp"
 #include <filesystem>
 #include <fstream>
+#include <shellapi.h>
 
 constexpr auto config_file = "config.json";
 
@@ -53,13 +54,18 @@ int main() {
     if (!std::filesystem::exists(config_file)) {
             std::ofstream configfile(config_file); //create config if not exists
 
+
+            std::cout << "Put in APP ID\n";
+            std::string app_id;
+            std::cin >> app_id;
+
             nlohmann::json config;
-            config["app_id"] = "0";
+            config["app_id"] = app_id;
             config["discord_status"] = "RPC by Narweex";
             configfile << config;
-
-            std::cout << "Please fill in app ID in config.json";
-            return 0;
+            
+            ShellExecute(0, 0, "https://discord.com/developers", 0, 0, SW_SHOW);
+            
     }
     
     std::ifstream config_load("config.json");
